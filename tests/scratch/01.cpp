@@ -34,13 +34,14 @@ struct C
     std::optional<int> o;
     char c;
 
-    friend constexpr bool operator == (const C & a, const C & b)
-    {
-        return (a.b1 == b.b1)
-            && (a.b2 == b.b2)
-            && (a.o == b.o)
-            && (a.c == b.c);
-    } 
+    friend constexpr bool operator == (const C &, const C &) = default;
+    // friend constexpr bool operator == (const C & a, const C & b)
+    // {
+    //     return (a.b1 == b.b1)
+    //         && (a.b2 == b.b2)
+    //         && (a.o == b.o)
+    //         && (a.c == b.c);
+    // }
 };
 
 
@@ -140,8 +141,19 @@ struct dd99::eis2::EIS2_Traits<C>
 // };
 
 
+template <class T>
+void test(const T & t)
+{
+    dd99::eis2::io::Output_To_Container<std::vector<std::byte>> out;
+    dd99::eis2::serialize(out, t);
+    auto u = dd99::eis2::deserialize<T>(dd99::eis2::io::Input_From_Iterator{out.m_container.begin()});
+    assert(t == u);
+}
 
-int main()
+
+
+
+void f()
 {
     // std::optional<int> opt;
 
@@ -261,5 +273,30 @@ int main()
 
     bool assert_b = value == value_deserialized;
     assert(assert_b);
+}
+
+
+int main()
+{
+
+    test(1<<0); test(1<<1); test(1<<2); test(1<<3);
+    test(1<<4); test(1<<5); test(1<<6); test(1<<7);
+    test(1<<8); test(1<<9); test(1<<10); test(1<<11);
+    test(1<<12); test(1<<13); test(1<<14); test(1<<15);
+    test(1<<16); test(1<<17); test(1<<18); test(1<<19);
+    test(1<<20); test(1<<21); test(1<<22); test(1<<23);
+    test(1<<24); test(1<<25); test(1<<26); test(1<<27);
+    test(1<<28); test(1<<29); test(1<<30); test(1<<31);
+
+    auto test64 = test<std::uint64_t>;
+
+    test64(1<<0); test64(1<<1); test64(1<<2); test64(1<<3);
+    test64(1<<28); test64(1<<29); test64(1<<30); test64(1<<31);
+    test64(1ull<<47); test64(1ull<<48); test64(1ull<<49); test64(1ull<<50);
+
+    test(std::vector<int>{1,5,6,7,10});
+
     
+    // f();
+
 }
