@@ -37,19 +37,19 @@ namespace dd99::eis2
 
 
         // can be memcopyed directly to output
-        template <class T> concept Trivial = EIS2_Traits<T>::is_trivial;
+        template <class T> concept Trivial = EIS2_Traits<std::remove_reference_t<T>>::is_trivial;
 
-        template <class T> concept Collection = EIS2_Traits<T>::is_collection;
+        template <class T> concept Collection = EIS2_Traits<std::remove_reference_t<T>>::is_collection;
 
         // elements are linear in memory with no padding between them (not counting internal padding)
-        template <class T> concept Contiguous_Collection = Collection<T> && EIS2_Traits<std::remove_cvref_t<T>>::is_contiguous;
+        template <class T> concept Contiguous_Collection = Collection<T> && EIS2_Traits<std::remove_reference_t<T>>::is_contiguous;
 
         // collection where data() can be memcopyed directly to output
-        template <class T> concept Trivial_Collection = Contiguous_Collection<T> && Trivial<typename std::remove_cvref_t<T>::value_type>;
+        template <class T> concept Trivial_Collection = Contiguous_Collection<T> && Trivial<typename std::remove_reference_t<T>::value_type>;
 
 
 
-        template <class T> concept Symmetric_Aggregate = requires(const T & t) { EIS2_Traits<T>::to_tuple(t); };
+        template <class T> concept Symmetric_Aggregate = requires(const T & t) { EIS2_Traits<std::remove_reference_t<T>>::to_tuple(t); };
 
 
         
