@@ -72,18 +72,20 @@ namespace dd99::eis2::internal
     }
 
     template <Trivial_Collection T>
-    constexpr auto serializable_collection_data_buffer(const T & value)
+    constexpr auto serializable_collection_data_buffer(T & value)
     {
         using value_type = std::remove_cvref_t<T>;
         using traits = EIS2_Traits<value_type>;
         using element_type = typename value_type::value_type;
 
+        using data_type = std::conditional_t<std::is_const_v<T>, const std::byte, std::byte>;
+
         if constexpr ( requires { traits::Serializable::data_buffer(value); } )
             return traits::Serializable::data_buffer(value);
         else
         {
-            return std::span<const std::byte>{
-                reinterpret_cast<const std::byte *>(value.data()),
+            return std::span<data_type>{
+                reinterpret_cast<data_type *>(value.data()),
                 value.size() * sizeof(element_type)};
         }
     }
