@@ -6,6 +6,7 @@
 #include <coroutine>
 #include <optional>
 #include <cassert>
+#include <iostream>
 
 
 struct A
@@ -153,6 +154,48 @@ void test(const T & t)
 
 
 
+// prints when created, moved and destroyed
+// struct Verbose
+// {
+//     int m_a{}, m_b{};
+
+//     Verbose() { std::cout << "V default constructed\n"; }
+//     Verbose(const Verbose & other) : m_a{other.m_a}, m_b{other.m_b} { std::cout << "V copy constructed\n"; }
+//     Verbose(Verbose && other) : m_a{std::move(other.m_a)}, m_b{std::move(other.m_b)} { std::cout << "V move constructed\n"; }
+//     Verbose(int a, int b) : m_a{a}, m_b{b} { std::cout << "V constructed\n"; }
+
+//     friend constexpr bool operator == (const Verbose &, const Verbose &) = default;
+// };
+
+// struct Verbose1
+// {
+//     Verbose m_a{}, m_b{};
+
+//     Verbose1() { std::cout << "V1 default constructed\n"; }
+//     Verbose1(const Verbose1 & other) : m_a{other.m_a}, m_b{other.m_b} { std::cout << "V1 copy constructed\n"; }
+//     Verbose1(Verbose1 && other) : m_a{std::move(other.m_a)}, m_b{std::move(other.m_b)} { std::cout << "V1 move constructed\n"; }
+
+//     Verbose1(Verbose a, Verbose b) : m_a{a}, m_b{b} { std::cout << "V1 constructed\n"; }
+
+//     friend constexpr bool operator == (const Verbose1 &, const Verbose1 &) = default;
+// };
+
+// template <>
+// struct dd99::eis2::EIS2_Traits<Verbose>
+// {
+//     static constexpr auto to_tuple(const Verbose & v)
+//     { return std::tie(v.m_a, v.m_b); }
+// };
+
+// template <>
+// struct dd99::eis2::EIS2_Traits<Verbose1>
+// {
+//     static constexpr auto to_tuple(const Verbose1 & v)
+//     { return std::tie(v.m_a, v.m_b); }
+// };
+
+
+
 void f()
 {
     // std::optional<int> opt;
@@ -275,10 +318,8 @@ void f()
     assert(assert_b);
 }
 
-
-int main()
+void f2()
 {
-
     test(1<<0); test(1<<1); test(1<<2); test(1<<3);
     test(1<<4); test(1<<5); test(1<<6); test(1<<7);
     test(1<<8); test(1<<9); test(1<<10); test(1<<11);
@@ -295,8 +336,14 @@ int main()
     test64(1ull<<47); test64(1ull<<48); test64(1ull<<49); test64(1ull<<50);
 
     test(std::vector<int>{1,5,6,7,10});
+}
 
-    
+
+int main()
+{   
     // f();
+    // f2();
 
+
+    // test(Verbose1{});
 }
