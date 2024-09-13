@@ -9,7 +9,7 @@ namespace dd99::eis2
 {
 
     // fw-declaration
-    template <Deserializable T, class InputT> constexpr auto deserialize(InputT & in) -> T;
+    template <Deserializable T, class InputT> constexpr auto deserialize(InputT && in) -> T;
 
 
     namespace internal
@@ -194,7 +194,7 @@ namespace dd99::eis2
 
 
     template <Deserializable T, class InputT>
-    constexpr auto deserialize(InputT & in)
+    constexpr auto deserialize(InputT && in)
     -> T
     {
         using dd99::eis2::io::read;
