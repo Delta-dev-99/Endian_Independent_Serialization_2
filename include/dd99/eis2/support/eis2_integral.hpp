@@ -20,7 +20,7 @@ namespace dd99::eis2
         using value_type = T;
         using transformed_type = trivial<value_type>;
 
-        static constexpr auto serialized_endianness = std::endian::big;
+        static constexpr auto serialized_endianness = std::endian::little;
         static constexpr auto is_trivial = (serialized_endianness == std::endian::native) || (sizeof(value_type) == 1);
 
 
