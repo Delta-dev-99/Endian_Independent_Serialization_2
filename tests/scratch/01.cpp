@@ -7,6 +7,9 @@
 #include <optional>
 #include <cassert>
 #include <iostream>
+#include <list>
+#include <map>
+#include <set>
 
 
 struct A
@@ -196,154 +199,179 @@ void test(const T & t)
 
 
 
-void f()
-{
-    // std::optional<int> opt;
+// void f()
+// {
+//     // std::optional<int> opt;
 
-    // using T = std::vector<A>;
+//     // using T = std::vector<A>;
 
-    // using TT = dd99::eis2::EIS2_Traits<T>;
+//     // using TT = dd99::eis2::EIS2_Traits<T>;
 
-    // constexpr auto t1 = dd99::eis2::internal::Serializable_Aggregate<T>;
-    // constexpr auto t2 = dd99::eis2::internal::Serializable_Transformable<T>;
-    // constexpr auto t3 = dd99::eis2::internal::Deserializable_Stageable<T>;
-    // constexpr auto t4 = dd99::eis2::internal::Trivial<T>;
-    // constexpr auto t5 = dd99::eis2::internal::is_tuple_v<T>;
-
-
-    // constexpr auto b1 = dd99::eis2::internal::Serializable_Aggregate<B>;
-    // constexpr auto b2 = dd99::eis2::internal::Serializable_Transformable<B>;
-    // constexpr auto b3 = dd99::eis2::internal::Trivial<B>;
-    // constexpr auto b4 = dd99::eis2::internal::is_tuple_v<B>;
+//     // constexpr auto t1 = dd99::eis2::internal::Serializable_Aggregate<T>;
+//     // constexpr auto t2 = dd99::eis2::internal::Serializable_Transformable<T>;
+//     // constexpr auto t3 = dd99::eis2::internal::Deserializable_Stageable<T>;
+//     // constexpr auto t4 = dd99::eis2::internal::Trivial<T>;
+//     // constexpr auto t5 = dd99::eis2::internal::is_tuple_v<T>;
 
 
-    // int x = 5;
-    // std::span<std::byte, sizeof(x)> buf{reinterpret_cast<std::byte *>(std::addressof(x)), sizeof(x)};
-
-    // std::vector<std::byte> data;
-    // std::copy(buf.begin(), buf.end(), std::back_inserter(data));
-
-    dd99::eis2::io::Output_To_Container<std::vector<std::byte>> o;
-    // o.write(std::initializer_list<const std::span<const std::byte>>{buf, buf});
-
-    C value{};
-    value.b1.v.emplace_back();
-    value.b1.v[0].x = 654;
-    value.b1.v[0].y = 123;
-    dd99::eis2::serialize(o, value);
+//     // constexpr auto b1 = dd99::eis2::internal::Serializable_Aggregate<B>;
+//     // constexpr auto b2 = dd99::eis2::internal::Serializable_Transformable<B>;
+//     // constexpr auto b3 = dd99::eis2::internal::Trivial<B>;
+//     // constexpr auto b4 = dd99::eis2::internal::is_tuple_v<B>;
 
 
-    {
-        using type_t = C;
-        using decomposed_t = decltype(dd99::eis2::internal::serializable_decompose(std::declval<const type_t &&>()));
-        using stage_t = decltype(dd99::eis2::internal::serializable_stage(std::declval<const decomposed_t &>()));
-        using stage_decomposed_t [[maybe_unused]] = decltype(dd99::eis2::internal::serializable_decompose(std::declval<const stage_t &>()));
+//     // int x = 5;
+//     // std::span<std::byte, sizeof(x)> buf{reinterpret_cast<std::byte *>(std::addressof(x)), sizeof(x)};
 
-        auto decomposed = dd99::eis2::internal::serializable_decompose(value);
-        auto stage = dd99::eis2::internal::serializable_stage(decomposed);
-        auto stage_decomposed = dd99::eis2::internal::serializable_decompose(stage);
-        auto buffers [[maybe_unused]] = dd99::eis2::internal::serializable_buffer(stage_decomposed);
-    }
+//     // std::vector<std::byte> data;
+//     // std::copy(buf.begin(), buf.end(), std::back_inserter(data));
 
+//     dd99::eis2::io::Output_To_Container<std::vector<std::byte>> o;
+//     // o.write(std::initializer_list<const std::span<const std::byte>>{buf, buf});
 
-    {
-        // char v;
-        // std::tuple<char> v;
-        std::tuple<std::tuple<char>> v;
-
-        using decomposed_t = decltype(dd99::eis2::internal::serializable_stage(v));
-
-        auto decomposed1 = dd99::eis2::internal::serializable_stage(v);
-    }
+//     C value{};
+//     value.b1.v.emplace_back();
+//     value.b1.v[0].x = 654;
+//     value.b1.v[0].y = 123;
+//     dd99::eis2::serialize(o, value);
 
 
-    {
-        using type_t = C;
-        using decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<type_t>());
-        using stage_t = decltype(dd99::eis2::internal::deserializable_stage<decomposed_t>());
-        using stage_decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<stage_t>());
-        stage_decomposed_t stage_decomposed;
-        auto buffers [[maybe_unused]] = dd99::eis2::internal::deserializable_buffer(stage_decomposed);
-    }
+//     {
+//         using type_t = C;
+//         using decomposed_t = decltype(dd99::eis2::internal::serializable_decompose(std::declval<const type_t &&>()));
+//         using stage_t = decltype(dd99::eis2::internal::serializable_stage(std::declval<const decomposed_t &>()));
+//         using stage_decomposed_t [[maybe_unused]] = decltype(dd99::eis2::internal::serializable_decompose(std::declval<const stage_t &>()));
 
-    // A a;
-    // auto decomposed = dd99::eis2::internal::serializable_decompose(a);
-
-    // int x;
-    // auto decomposedx = dd99::eis2::internal::serializable_decompose(x);
-    // dd99::eis2::trivial<int> y;
-    // static_assert(dd99::eis2::internal::Trivial<decltype(y)>);
-    // y.value = 15;
-    // auto decomposedy = 
-    //     dd99::eis2::internal::serializable_decompose(y);
-
-    // // create staging storage for data that requires transformation
-    // auto stage = std::apply([](const auto & ... x){
-    //     return std::forward_as_tuple(dd99::eis2::internal::serializable_stage(x) ...);
-    // }, decomposed);
+//         auto decomposed = dd99::eis2::internal::serializable_decompose(value);
+//         auto stage = dd99::eis2::internal::serializable_stage(decomposed);
+//         auto stage_decomposed = dd99::eis2::internal::serializable_decompose(stage);
+//         auto buffers [[maybe_unused]] = dd99::eis2::internal::serializable_buffer(stage_decomposed);
+//     }
 
 
+//     {
+//         // char v;
+//         // std::tuple<char> v;
+//         std::tuple<std::tuple<char>> v;
 
-    // constexpr auto b1 = dd99::eis2::EIS2_Traits<unsigned int>::is_trivially_serializable;
-    // constexpr auto b2 = dd99::eis2::Trivially_Serializable<unsigned int>;
+//         using decomposed_t = decltype(dd99::eis2::internal::serializable_stage(v));
 
-    // static_assert(dd99::eis2::internal::Trivial<const int &>);
+//         auto decomposed1 = dd99::eis2::internal::serializable_stage(v);
+//     }
 
-    // using K2 = dd99::eis2::internal::Serializable_Impl<
+
+//     {
+//         using type_t = C;
+//         using decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<type_t>());
+//         using stage_t = decltype(dd99::eis2::internal::deserializable_stage<decomposed_t>());
+//         using stage_decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<stage_t>());
+//         stage_decomposed_t stage_decomposed;
+//         auto buffers [[maybe_unused]] = dd99::eis2::internal::deserializable_buffer(stage_decomposed);
+//     }
+
+//     // A a;
+//     // auto decomposed = dd99::eis2::internal::serializable_decompose(a);
+
+//     // int x;
+//     // auto decomposedx = dd99::eis2::internal::serializable_decompose(x);
+//     // dd99::eis2::trivial<int> y;
+//     // static_assert(dd99::eis2::internal::Trivial<decltype(y)>);
+//     // y.value = 15;
+//     // auto decomposedy = 
+//     //     dd99::eis2::internal::serializable_decompose(y);
+
+//     // // create staging storage for data that requires transformation
+//     // auto stage = std::apply([](const auto & ... x){
+//     //     return std::forward_as_tuple(dd99::eis2::internal::serializable_stage(x) ...);
+//     // }, decomposed);
+
+
+
+//     // constexpr auto b1 = dd99::eis2::EIS2_Traits<unsigned int>::is_trivially_serializable;
+//     // constexpr auto b2 = dd99::eis2::Trivially_Serializable<unsigned int>;
+
+//     // static_assert(dd99::eis2::internal::Trivial<const int &>);
+
+//     // using K2 = dd99::eis2::internal::Serializable_Impl<
     
 
-    // auto vec = o.data;
-    // dd99::eis2::serialize(vec, o);
+//     // auto vec = o.data;
+//     // dd99::eis2::serialize(vec, o);
 
-    // auto unpacked = dd99::eis2::internal::serializable_full_unpack(value);
+//     // auto unpacked = dd99::eis2::internal::serializable_full_unpack(value);
 
-    // auto stage = std::apply([](const auto & ... x){
-    //     return std::make_tuple(dd99::eis2::internal::serializable_stage(x) ...);
-    // }, unpacked);
-
-
-    // auto buffers = std::apply([](const auto & ... x){
-    //     return std::make_tuple(dd99::eis2::internal::serializable_buffer(x) ...);
-    // }, stage);
+//     // auto stage = std::apply([](const auto & ... x){
+//     //     return std::make_tuple(dd99::eis2::internal::serializable_stage(x) ...);
+//     // }, unpacked);
 
 
+//     // auto buffers = std::apply([](const auto & ... x){
+//     //     return std::make_tuple(dd99::eis2::internal::serializable_buffer(x) ...);
+//     // }, stage);
 
 
 
-    dd99::eis2::io::Input_From_Iterator input{o.m_container.begin()};
-    auto value_deserialized = dd99::eis2::deserialize<decltype(value)>(input);
 
 
-    bool assert_b = value == value_deserialized;
-    assert(assert_b);
-}
+//     dd99::eis2::io::Input_From_Iterator input{o.m_container.begin()};
+//     auto value_deserialized = dd99::eis2::deserialize<decltype(value)>(input);
 
-void f2()
+
+//     bool assert_b = value == value_deserialized;
+//     assert(assert_b);
+// }
+
+// void f2()
+// {
+//     test(1<<0); test(1<<1); test(1<<2); test(1<<3);
+//     test(1<<4); test(1<<5); test(1<<6); test(1<<7);
+//     test(1<<8); test(1<<9); test(1<<10); test(1<<11);
+//     test(1<<12); test(1<<13); test(1<<14); test(1<<15);
+//     test(1<<16); test(1<<17); test(1<<18); test(1<<19);
+//     test(1<<20); test(1<<21); test(1<<22); test(1<<23);
+//     test(1<<24); test(1<<25); test(1<<26); test(1<<27);
+//     test(1<<28); test(1<<29); test(1<<30); test(1<<31);
+
+//     auto test64 = test<std::uint64_t>;
+
+//     test64(1<<0); test64(1<<1); test64(1<<2); test64(1<<3);
+//     test64(1<<28); test64(1<<29); test64(1<<30); test64(1<<31);
+//     test64(1ull<<47); test64(1ull<<48); test64(1ull<<49); test64(1ull<<50);
+
+//     test(std::vector<int>{1,5,6,7,10});
+// }
+
+void f3()
 {
-    test(1<<0); test(1<<1); test(1<<2); test(1<<3);
-    test(1<<4); test(1<<5); test(1<<6); test(1<<7);
-    test(1<<8); test(1<<9); test(1<<10); test(1<<11);
-    test(1<<12); test(1<<13); test(1<<14); test(1<<15);
-    test(1<<16); test(1<<17); test(1<<18); test(1<<19);
-    test(1<<20); test(1<<21); test(1<<22); test(1<<23);
-    test(1<<24); test(1<<25); test(1<<26); test(1<<27);
-    test(1<<28); test(1<<29); test(1<<30); test(1<<31);
+    test(std::optional<int>{});
+    test(std::optional<int>{5});
+    test(std::pair{5, 8});
+    test(std::tuple{5, 8});
 
-    auto test64 = test<std::uint64_t>;
-
-    test64(1<<0); test64(1<<1); test64(1<<2); test64(1<<3);
-    test64(1<<28); test64(1<<29); test64(1<<30); test64(1<<31);
-    test64(1ull<<47); test64(1ull<<48); test64(1ull<<49); test64(1ull<<50);
-
-    test(std::vector<int>{1,5,6,7,10});
+    test(std::vector{1,5,8,9});
+    test(std::map<int, int>{{1,5},{3,8},{7,9}});
+    test(std::set{6,4,7,8,6,2});
 }
 
 
 int main()
-{   
+{
+
+    // {
+    //     using type_t = const int;
+    //     using decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<type_t>());
+    //     using stage_t = decltype(dd99::eis2::internal::deserializable_stage<decomposed_t>());
+    //     using stage_decomposed_t = decltype(dd99::eis2::internal::deserializable_decompose<stage_t>());
+    //     stage_decomposed_t stage_decomposed;
+    //     auto buffers [[maybe_unused]] = dd99::eis2::internal::deserializable_buffer(stage_decomposed);
+    // }
+
+
     // f();
     // f2();
+    f3();
 
+    // std::tuple<dd99::eis2::trivial<const int>, dd99::eis2::trivial<int>> arst;
 
     // test(Verbose1{});
 }

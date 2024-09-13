@@ -25,10 +25,17 @@ namespace dd99::eis2
                 Serializable_Aggregate<value_type>
                 xor Serializable_Transformable<value_type>
                 xor Serializable_Stageable<value_type>
-                xor Trivial<value_type>
-                xor is_tuple_v<value_type>);
+                xor Trivial<value_type>);
 
-            if constexpr (Symmetric_Aggregate<value_type>)
+            if constexpr (is_tuple_v<value_type>)
+                return [&]<std::size_t ... N>(std::index_sequence<N...>){
+                    return std::tuple_cat(serializable_decompose(std::get<N>(t))...);
+                }(std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>());
+                // return std::apply([](auto && ... ts)
+                // {
+                //     return std::tuple_cat(serializable_decompose(std::forward<decltype(ts)>(ts))...);
+                // }, std::forward<T>(t));
+            else if constexpr (Symmetric_Aggregate<value_type>)
                 return serializable_decompose(EIS2_Traits<value_type>::to_tuple(std::forward<T>(t)));
             else if constexpr (Serializable_Aggregate<value_type>)
                 return serializable_decompose(EIS2_Traits<value_type>::Serializable::to_tuple(std::forward<T>(t)));
@@ -37,14 +44,7 @@ namespace dd99::eis2
             else if constexpr (Serializable_Stageable<value_type> || Trivial<value_type>)
                 // return std::forward_as_tuple(std::forward<T>(t));
                 return std::tuple<T>{std::forward<T>(t)};
-            else if constexpr (is_tuple_v<value_type>)
-                return [&]<std::size_t ... N>(std::index_sequence<N...>){
-                    return std::tuple_cat(serializable_decompose(std::get<N>(t))...);
-                }(std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>());
-                // return std::apply([](auto && ... ts)
-                // {
-                //     return std::tuple_cat(serializable_decompose(std::forward<decltype(ts)>(ts))...);
-                // }, std::forward<T>(t));
+                
         }
 
 

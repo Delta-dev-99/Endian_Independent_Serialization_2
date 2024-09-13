@@ -49,7 +49,7 @@ namespace dd99::eis2
 
 
 
-        template <class T> concept Symmetric_Aggregate = requires(const T & t) { EIS2_Traits<std::remove_reference_t<T>>::to_tuple(t); };
+        template <class T> concept Symmetric_Aggregate = is_tuple_v<std::remove_reference_t<T>> || requires(const T & t) { EIS2_Traits<std::remove_reference_t<T>>::to_tuple(t); };
 
 
         

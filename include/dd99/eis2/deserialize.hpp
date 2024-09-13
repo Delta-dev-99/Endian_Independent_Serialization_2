@@ -25,10 +25,13 @@ namespace dd99::eis2
                 Deserializable_Aggregate<T>
                 xor Deserializable_Transformable<T>
                 xor Deserializable_Stageable<T>
-                xor Trivial<T>
-                xor is_tuple_v<T>);
+                xor Trivial<T>);
 
-            if constexpr (Symmetric_Aggregate<T>)
+            if constexpr (is_tuple_v<T>)
+                return []<std::size_t ... N>(std::index_sequence<N...>){
+                    return std::tuple_cat(deserializable_decompose<std::tuple_element_t<N, T>>()...);
+                }(std::make_index_sequence<std::tuple_size_v<T>>());
+            else if constexpr (Symmetric_Aggregate<T>)
                 return deserializable_decompose<remove_cv_ref_tuple_t<decltype(EIS2_Traits<T>::to_tuple(std::declval<T &>()))>>();
             else if constexpr (Deserializable_Aggregate<T>)
                 return deserializable_decompose<typename EIS2_Traits<T>::Deserializable::tuple_type>();
@@ -36,10 +39,6 @@ namespace dd99::eis2
                 return deserializable_decompose<typename EIS2_Traits<T>::Deserializable::transformed_type>();
             else if constexpr (Deserializable_Stageable<T> || Trivial<T>)
                 return std::make_tuple(T{});
-            else if constexpr (is_tuple_v<T>)
-                return []<std::size_t ... N>(std::index_sequence<N...>){
-                    return std::tuple_cat(deserializable_decompose<std::tuple_element_t<N, T>>()...);
-                }(std::make_index_sequence<std::tuple_size_v<T>>());
         }
 
         template <class T> constexpr auto deserializable_stage()
@@ -81,17 +80,9 @@ namespace dd99::eis2
 
         template <class T> constexpr T deserializable_compose(decltype(deserializable_decompose<T>()) && value)
         {
-            if constexpr (Symmetric_Aggregate<T>)
-                return std::make_from_tuple<T>(deserializable_compose<remove_cv_ref_tuple_t<decltype(EIS2_Traits<T>::to_tuple(std::declval<T &>()))>>(std::move(value)));
-            else if constexpr (Deserializable_Aggregate<T>)
-                return EIS2_Traits<T>::Deserializable::from_tuple(deserializable_compose<typename EIS2_Traits<T>::Deserializable::tuple_type>(std::move(value)));
-            else if constexpr (Deserializable_Transformable<T>)
-                return EIS2_Traits<T>::Deserializable::reverse_transform(deserializable_compose<typename EIS2_Traits<T>::Deserializable::transformed_type>(std::move(value)));
-            else if constexpr (Deserializable_Stageable<T> || Trivial<T>)
-                return std::make_from_tuple<T>(std::move(value));
-            else if constexpr (is_tuple_v<T>)
+            if constexpr (is_tuple_v<T>)
                 return [/* value = std::forward<decltype(value)>(value) */ &]<std::size_t ... N>(std::index_sequence<N...>){
-                    return std::make_tuple(
+                    return T{
                         deserializable_compose<std::tuple_element_t<N, T>>(
                             tuple_take_n<
                                 std::tuple_size_v<decltype(deserializable_decompose<std::tuple_element_t<N, T>>())>,
@@ -100,8 +91,16 @@ namespace dd99::eis2
                                 }(std::make_index_sequence<N>())
                             >(value)
                         )...
-                    );
+                    };
                 }(std::make_index_sequence<std::tuple_size_v<T>>());
+            else if constexpr (Symmetric_Aggregate<T>)
+                return std::make_from_tuple<T>(deserializable_compose<remove_cv_ref_tuple_t<decltype(EIS2_Traits<T>::to_tuple(std::declval<T &>()))>>(std::move(value)));
+            else if constexpr (Deserializable_Aggregate<T>)
+                return EIS2_Traits<T>::Deserializable::from_tuple(deserializable_compose<typename EIS2_Traits<T>::Deserializable::tuple_type>(std::move(value)));
+            else if constexpr (Deserializable_Transformable<T>)
+                return EIS2_Traits<T>::Deserializable::reverse_transform(deserializable_compose<typename EIS2_Traits<T>::Deserializable::transformed_type>(std::move(value)));
+            else if constexpr (Deserializable_Stageable<T> || Trivial<T>)
+                return std::make_from_tuple<T>(std::move(value));
         }
 
         template <class T> constexpr T deserializable_stage_commit(decltype(deserializable_stage<T>()) & value)

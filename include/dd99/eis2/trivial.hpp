@@ -1,5 +1,8 @@
 #pragma once
 
+#include <type_traits>
+
+
 
 namespace dd99::eis2
 {
@@ -7,7 +10,7 @@ namespace dd99::eis2
     template <class T>
     struct trivial
     {
-        T value;
+        std::remove_const_t<T> value;
     };
 
 }
