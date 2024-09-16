@@ -48,30 +48,6 @@ namespace dd99::eis2
         }
 
 
-        // template <class T>
-        // constexpr auto serializable_stage(T && t)
-        // {
-        //     using value_type = std::remove_cvref_t<T>;
-
-        //     if constexpr (is_tuple_v<value_type>)
-        //     {
-        //         // return [&]<std::size_t ... N>(std::index_sequence<N...>){
-        //         //     return std::tuple_cat(
-        //         //         serializable_stage(
-        //         //             std::forward<std::tuple_element_t<N, std::remove_reference_t<T>>>(
-        //         //                 std::get<N>(t)))...);
-        //         // }(std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>());
-        //         return std::apply([](auto && ... ts)
-        //         {
-        //             return std::tuple_cat(serializable_stage(std::forward<decltype(ts)>(ts))...);
-        //         }, std::forward<T>(t));
-        //     }
-        //     else if constexpr (Serializable_Stageable<value_type>)
-        //         return std::make_tuple(EIS2_Traits<value_type>::Serializable::stage(std::forward<T>(t)));
-        //     else
-        //         return std::forward_as_tuple(std::forward<T>(t));
-        // }
-
         template <class T>
         constexpr decltype(auto) serializable_stage(T && t)
         {
@@ -79,12 +55,6 @@ namespace dd99::eis2
 
             if constexpr (is_tuple_v<value_type>)
             {
-                // return [&]<std::size_t ... N>(std::index_sequence<N...>){
-                //     return std::tuple_cat(
-                //         serializable_stage(
-                //             std::forward<std::tuple_element_t<N, std::remove_reference_t<T>>>(
-                //                 std::get<N>(t)))...);
-                // }(std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>());
                 return std::apply([](auto && ... ts){
                     return std::tuple<decltype(serializable_stage(std::forward<decltype(ts)>(ts)))...>(
                         serializable_stage(std::forward<decltype(ts)>(ts))...);
@@ -133,22 +103,22 @@ namespace dd99::eis2
         }
 
         // template <class T, dd99::eis2::io::OutputDevice OutputT>
-        // constexpr auto serializable_stage_commit(OutputT & out, T && t)
+        // constexpr auto async_serialize_collection_data(OutputT & out, T && t)
         // {
         //     using value_type = std::remove_cvref_t<T>;
-            
-        //     if constexpr (Serializable_Stageable<value_type>)
+
+        //     if constexpr (Collection<value_type>)
         //     {
-        //         if constexpr ( requires { EIS2_Traits<value_type>::Serializable::stage_commit(std::forward<T>(t)); } )
-        //             dd99::eis2::io::write(out, EIS2_Traits<value_type>::Serializable::stage_commit(std::forward<T>(t)));
-        //         else if constexpr ( requires { EIS2_Traits<value_type>::Serializable::stage_commit(out, std::forward<T>(t)); } )
-        //             EIS2_Traits<value_type>::Serializable::stage_commit(out, std::forward<T>(t));
+        //         if constexpr (Trivial_Collection<value_type>)
+        //             dd99::eis2::io::write(out, serializable_collection_data_buffer(t));
+        //         else
+        //             for (const auto & x : collection_as_range(t))
+        //                 dd99::eis2::serialize(out, x);
         //     }
         //     else if constexpr (is_tuple_v<value_type>)
         //         std::apply([&](auto && ... ts){
-        //             (serializable_stage_commit(out, std::forward<decltype(ts)>(ts)), ...);
+        //             (serialize_collection_data(out, std::forward<decltype(ts)>(ts)), ...);
         //         }, std::forward<T>(t));
-
         // }
 
     }
@@ -172,11 +142,8 @@ namespace dd99::eis2
         // write data
         dd99::eis2::io::write(out, buffers);
 
+        // serialize collection data
         dd99::eis2::internal::serialize_collection_data(out, decomposed);
-
-        // post-stage commit for extra (usually dynamic) data
-        // dd99::eis2::internal::serializable_stage_commit(out, decomposed);
-
     };
 
 }
