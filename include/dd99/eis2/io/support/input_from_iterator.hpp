@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dd99/eis2/io/buffer.hpp>
+#include <dd99/eis2/io/output_device.hpp>
 #include <iterator>
 
 
