@@ -115,7 +115,8 @@ namespace dd99::eis2
         }
 
 
-        template <class T, std::convertible_to<typename T::value_type> Elem> constexpr void deserializable_collection_insert(T & t, Elem && elem)
+        template <class T, std::convertible_to<typename T::value_type> Elem>
+        constexpr void deserializable_collection_insert(T & t, Elem && elem)
         {
             if constexpr ( requires { EIS2_Traits<T>::Deserializable::insert(t, std::move(elem)); } )
                 return EIS2_Traits<T>::Deserializable::insert(t, std::move(elem));
@@ -155,8 +156,8 @@ namespace dd99::eis2
                 }
             }
             else if constexpr (is_tuple_v<T>)
-                std::apply([&](auto && ... datas){
-                    std::apply([&](auto && ... stages){
+                std::apply([&](auto & ... datas){
+                    std::apply([&](const auto & ... stages){
                         (deserialize_collection_data(input, datas, stages), ...);
                     }, stage);
                 }, data);
