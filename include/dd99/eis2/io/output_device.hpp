@@ -46,18 +46,18 @@ namespace dd99::eis2::io
         };
 
 
-    template <class T> concept AsyncOutputDevice =
-        requires(T & t)
-        {
-            // { t.async_write(std::byte{}) };
-            t.async_write(std::span<const std::byte>{});
-        };
+    // template <class T> concept AsyncOutputDevice =
+    //     requires(T & t)
+    //     {
+    //         // { t.async_write(std::byte{}) };
+    //         t.async_write(std::span<const std::byte>{});
+    //     };
 
-    template <class T> concept AsyncScatterGatherOutputDevice = OutputDevice<T> &&
-        requires(T & t)
-        {
-            t.async_write(std::initializer_list<const std::span<const std::byte>>{});
-        };
+    // template <class T> concept AsyncScatterGatherOutputDevice = OutputDevice<T> &&
+    //     requires(T & t)
+    //     {
+    //         t.async_write(std::initializer_list<const std::span<const std::byte>>{});
+    //     };
 
 
 

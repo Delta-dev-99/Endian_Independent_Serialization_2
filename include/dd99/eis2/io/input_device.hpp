@@ -23,17 +23,17 @@ namespace dd99::eis2::io
         };
 
 
-    template <class T> concept AsyncInputDevice =
-        requires(T & t, std::span<std::byte> buf)
-        {
-            t.async_read(buf);
-        };
+    // template <class T> concept AsyncInputDevice =
+    //     requires(T & t, std::span<std::byte> buf)
+    //     {
+    //         t.async_read(buf);
+    //     };
 
-    template <class T> concept ScatterGatherAsyncInputDevice =
-        requires(T & t, std::initializer_list<const std::span<std::byte>> buf_seq)
-        {
-            t.async_read(buf_seq);
-        };
+    // template <class T> concept ScatterGatherAsyncInputDevice =
+    //     requires(T & t, std::initializer_list<const std::span<std::byte>> buf_seq)
+    //     {
+    //         t.async_read(buf_seq);
+    //     };
 
 
 
