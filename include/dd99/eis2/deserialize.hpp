@@ -163,33 +163,6 @@ namespace dd99::eis2
                 }, data);
         }
 
-
-        // template <class T>
-        // constexpr T deserializable_stage_commit(decltype(deserializable_stage<T>()) && stage)
-        // {
-        //     if constexpr (!Deserializable_Stageable<T>)
-        //     {
-        //         // allow pass-through for non-stageable types
-        //         static_assert(std::same_as<T, decltype(stage)>);
-        //         return std::move(stage);
-        //     }
-        //     else
-        //     {
-        //         return EIS2_Traits<T>::Deserializable::stage_commit(
-        //             deserializable_stage_commit<typename EIS2_Traits<T>::staging_type>(std::move(stage))
-        //         );
-        //     }
-        // }
-
-        // template <class ... T>
-        // constexpr auto deserializable_stage_commit<std::tuple<T...>>(decltype(deserializable_stage<std::tuple<T...>>()) stage)
-        // {
-        //     return std::apply([](auto && ... stage_elems)
-        //     {
-        //         return std::make_tuple(deserializable_stage_commit<T>(std::move(stage_elems))...);
-        //     }, std::move(stage)); 
-        // }
-
     }
 
 
