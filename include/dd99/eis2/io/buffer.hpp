@@ -40,6 +40,9 @@ namespace dd99::eis2::io
 
 
 
+    // Convert objects that objects that model the buffer concept (eg containers)
+    // into std::span<std::byte>
+    // 
     // ConstBuffer subsumes MutableBuffer
     // This function should return a mutable buffer when possible
     template <ConstBuffer T>
