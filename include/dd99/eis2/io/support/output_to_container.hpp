@@ -10,7 +10,7 @@ namespace dd99::eis2::io
     namespace internal
     {
         template <class T> concept Container = 
-            std::convertible_to<std::byte, typename T::value_type> &&
+            std::convertible_to<std::byte, typename std::remove_reference_t<T>::value_type> &&
             requires(T & t)
             {
                 t.empty();
