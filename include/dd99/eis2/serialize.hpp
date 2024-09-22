@@ -10,7 +10,7 @@ namespace dd99::eis2
 
     // fw-declaration
     template <Serializable T, dd99::eis2::io::OutputDevice OutputT>
-    constexpr void serialize(OutputT & out, const T & value);
+    constexpr void serialize(OutputT && out, const T & value);
 
 
     namespace internal
@@ -125,7 +125,7 @@ namespace dd99::eis2
 
 
     template <Serializable T, dd99::eis2::io::OutputDevice OutputT>
-    constexpr void serialize(OutputT & out, const T & value)
+    constexpr void serialize(OutputT && out, const T & value)
     {
         // decompose data
         auto decomposed = dd99::eis2::internal::serializable_decompose(value);
