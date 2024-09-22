@@ -33,17 +33,18 @@ namespace dd99::eis2::io
             for (const auto & x : buffers)
                 size += x.size();
 
-            m_container.reserve(m_container.size() + size);
+            m_container.resize(m_container.size() + size);
+            auto out_iter = m_container.end() - size;
 
             for (const auto & x : buffers)
-                std::copy(x.begin(), x.end(), std::back_inserter(m_container));
+                out_iter = std::copy(x.begin(), x.end(), out_iter);
         }
 
         template <dd99::eis2::io::ConstBuffer T>
         void write(const T & buffer)
         {
-            m_container.reserve(m_container.size() + buffer.size());
-            std::copy(buffer.begin(), buffer.end(), std::back_inserter(m_container));
+            m_container.resize(m_container.size() + buffer.size());
+            std::copy(buffer.begin(), buffer.end(), m_container.end() - buffer.size());
         }
     };
 
