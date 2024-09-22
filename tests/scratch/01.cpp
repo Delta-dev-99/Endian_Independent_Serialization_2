@@ -1,6 +1,7 @@
 #include <dd99/eis2/eis2.hpp>
 #include <dd99/eis2/io/support/output_to_container.hpp>
 #include <dd99/eis2/io/support/input_from_iterator.hpp>
+#include <dd99/eis2/io/support/output_to_iterator.hpp>
 #include <vector>
 #include <list>
 #include <coroutine>
