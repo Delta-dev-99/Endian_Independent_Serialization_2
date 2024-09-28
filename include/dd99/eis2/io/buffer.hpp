@@ -1,5 +1,10 @@
 #pragma once
 
+#include <span>
+#include <cstddef>
+#include <iterator>
+#include <concepts>
+
 
 
 namespace dd99::eis2::io
