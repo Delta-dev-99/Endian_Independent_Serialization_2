@@ -78,12 +78,13 @@ namespace dd99::eis2::internal
         using traits = EIS2_Traits<value_type>;
         using element_type = typename value_type::value_type;
 
-        using data_type = std::conditional_t<std::is_const_v<T>, const std::byte, std::byte>;
 
         if constexpr ( requires { traits::Serializable::data_buffer(value); } )
             return traits::Serializable::data_buffer(value);
         else
         {
+            using data_type = std::conditional_t<std::is_const_v<std::remove_reference_t<decltype(*value.data())>>, const std::byte, std::byte>;
+
             return std::span<data_type>{
                 reinterpret_cast<data_type *>(value.data()),
                 value.size() * sizeof(element_type)};
